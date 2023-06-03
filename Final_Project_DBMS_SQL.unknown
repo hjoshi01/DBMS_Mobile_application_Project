@@ -1,0 +1,979 @@
+-- Down Script
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_year')
+    alter table student_personal drop constraint FK_student_year
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_program')
+    alter table student_personal drop constraint FK_student_program
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_school')
+    alter table student_personal drop constraint FK_student_school
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_origin_country')
+    alter table student_personal drop constraint FK_origin_country
+
+drop table if exists student_personal
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_personal')
+    alter table student_address drop constraint FK_student_personal
+
+drop table if exists student_address 
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_employer_details')
+    alter table student_employment drop constraint FK_employer_details
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_details_emp')
+    alter table student_employment drop constraint FK_student_details_emp
+
+drop table if exists student_employment
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_priority_of_spend')
+    alter table monthly_expense_wallet drop constraint FK_priority_of_spend
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_priority_of_spend')
+    alter table monthly_expense_wallet drop constraint FK_priority_of_spend
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_details_wallet')
+    alter table monthly_expense_wallet drop constraint FK_student_details_wallet
+
+drop table if exists monthly_expense_wallet
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_on_campus_food_outlet')
+    alter table food drop constraint FK_on_campus_food_outlet
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_groccery_store_priority')
+    alter table food drop constraint FK_groccery_store_priority
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_details_food')
+    alter table food drop constraint FK_student_details_food
+
+drop table if exists food
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_peak_time_univ_transport')
+    alter table transport drop constraint FK_peak_time_univ_transport
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_preffered_mode_transport')
+    alter table transport drop constraint FK_preffered_mode_transport
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_preffered_univ_mode_transport')
+    alter table transport drop constraint FK_preffered_univ_mode_transport
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_costly_unic_mode_transport')
+    alter table transport drop constraint FK_costly_unic_mode_transport
+
+if exists(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+    where CONSTRAINT_NAME='FK_student_details_transport')
+    alter table transport drop constraint FK_student_details_transport
+
+drop table if exists transport
+
+
+
+drop table if exists student_year_lookup
+
+drop table if exists student_program_lookup
+
+drop table if exists student_school_lookup
+
+drop table if exists groccery_store_lookup
+
+drop table if exists campus_food_outlet_lookup
+
+drop table if exists origin_country_lookup
+
+drop table if exists employer_lookup
+
+drop table if exists priority_lookup
+
+drop table if exists mode_lookup
+
+drop table if exists peak_time_lookup
+
+
+drop database if exists student_expense_survey
+GO
+
+use [master]
+
+
+
+
+-- UP SCRIPT
+
+-- Lookup Tables--
+
+create database student_expense_survey
+GO
+
+use student_expense_survey
+GO
+
+CREATE TABLE student_year_lookup (
+    year_id INT IDENTITY NOT NULL,
+    year_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_year_id] PRIMARY KEY ([year_id])
+)
+
+CREATE TABLE student_program_lookup (
+    program_id INT IDENTITY NOT NULL,
+    program_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_program_id] PRIMARY KEY ([program_id])
+)
+
+CREATE TABLE student_school_lookup (
+    school_id INT IDENTITY NOT NULL,
+    school_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_aschool_id] PRIMARY KEY ([school_id])
+)
+
+CREATE TABLE groccery_store_lookup (
+    groccery_store_id INT IDENTITY NOT NULL,
+    groccery_store_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_groccery_store_id] PRIMARY KEY ([groccery_store_id])
+)
+
+CREATE TABLE campus_food_outlet_lookup (
+    campus_food_outlet_id INT IDENTITY NOT NULL,
+    outlet_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_campus_food_outlet_id] PRIMARY KEY ([campus_food_outlet_id])
+)
+
+CREATE TABLE origin_country_lookup (
+    origin_country_id INT IDENTITY NOT NULL,
+    country_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_origin_country_id] PRIMARY KEY ([origin_country_id])
+)
+
+CREATE TABLE employer_lookup (
+    employer_id INT IDENTITY NOT NULL,
+    employer_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_employer_id] PRIMARY KEY ([employer_id])
+)
+
+CREATE TABLE priority_lookup (
+    priority_id INT IDENTITY NOT NULL,
+    priority_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_priority_id] PRIMARY KEY ([priority_id])
+)
+
+CREATE TABLE mode_lookup (
+    mode_id INT IDENTITY NOT NULL,
+    mode_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_mode_id] PRIMARY KEY ([mode_id])
+)
+
+CREATE TABLE peak_time_lookup (
+    peak_time_id INT IDENTITY NOT NULL,
+    range_name VARCHAR(50) NOT NULL,
+    
+    CONSTRAINT [PK_peak_time_id] PRIMARY KEY ([peak_time_id])
+)
+
+
+
+CREATE TABLE student_personal (
+    student_id INT IDENTITY NOT NULL,
+    SUID INT NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    phone_no VARCHAR(15), 
+    gender VARCHAR(9),
+    year_id INT NOT NULL,
+    program_id INT NOT NULL,
+    school_id INT NOT NULL,
+    origin_country_id INT NOT NULL,
+
+    CONSTRAINT [PK_currently_enrolled_students] PRIMARY KEY ([STUDENT_ID]),
+    CONSTRAINT [U_SUID] UNIQUE ([SUID]),                                        -- do i need unique on surrogate also??
+    CONSTRAINT [CK_gender] CHECK (gender in ('Male','Female','Other')),
+    CONSTRAINT [FK_student_year] FOREIGN KEY (year_id) references student_year_lookup(year_id),
+    CONSTRAINT [FK_student_program] FOREIGN KEY (program_id) references student_program_lookup(program_id),
+    CONSTRAINT [FK_student_school] FOREIGN KEY (school_id) references student_school_lookup(school_id),
+    CONSTRAINT [FK_origin_country] FOREIGN KEY (origin_country_id) references origin_country_lookup(origin_country_id)
+)
+
+
+CREATE TABLE student_address (
+    address_id INT IDENTITY NOT NULL,
+    street_name VARCHAR(30) NOT NULL,
+    house_no VARCHAR(6),
+    pin_code VARCHAR(9) NOT NULL,
+    city VARCHAR(10),
+    student_id INT NOT NULL,                            -- this will be unique, should i have unique constraint for this               
+
+    CONSTRAINT [PK_student_adress] PRIMARY KEY ([address_id]),
+    CONSTRAINT [U_student_detail] UNIQUE ([student_id]),
+    CONSTRAINT [FK_student_personal] FOREIGN KEY (student_id) references student_personal(student_id)
+)
+
+CREATE TABLE student_employment (
+    employment_id INT IDENTITY NOT NULL,
+    employed VARCHAR(6) NOT NULL,
+    employer_id INT DEFAULT 0,
+    hourly_pay DECIMAL(4,2) DEFAULT 0,
+    hours_per_week INT DEFAULT 0,
+    average_pay_per_month AS (hours_per_week * 4),
+    student_id INT NOT NULL,                                         --- will be repeating (1 student 2 part time jobs)
+    
+    CONSTRAINT [PK_employer_identity] PRIMARY KEY ([employment_id]),
+    CONSTRAINT [CK_student_employer_check] CHECK ((employed = 'No') OR (employer_id IS NOT NULL AND hourly_pay IS NOT NULL AND hours_per_week IS NOT NULL)),
+    CONSTRAINT [FK_employer_details] FOREIGN KEY (employer_id) references employer_lookup(employer_id),
+    CONSTRAINT [FK_student_details_emp] FOREIGN KEY (student_id) references student_personal(student_id),
+)
+
+
+CREATE TABLE monthly_expense_wallet (
+    expense_id INT IDENTITY NOT NULL,
+    food_budget INT DEFAULT 0,
+    shelter_budget INT DEFAULT 0,
+    transport_budget INT DEFAULT 0,
+    leisure_budget INT DEFAULT 0,
+    miscellaneous_budget INT DEFAULT 0,
+    total_monthly_budget AS (food_budget+shelter_budget+transport_budget+leisure_budget+miscellaneous_budget),
+    spend_priority_1_id INT NOT NULL,
+    save_priority_1_id INT NOT NULL,
+    student_id INT NOT NULL,
+
+    CONSTRAINT [PK_expense] PRIMARY KEY ([expense_id]),
+    CONSTRAINT [FK_student_details_wallet] FOREIGN KEY (student_id) references student_personal(student_id),
+    CONSTRAINT [FK_priority_of_spend] FOREIGN KEY (spend_priority_1_id) references priority_lookup(priority_id),
+    CONSTRAINT [FK_priority_of_save] FOREIGN KEY (save_priority_1_id) references priority_lookup(priority_id)
+)
+
+CREATE TABLE food (
+    food_id INT IDENTITY NOT NULL,
+    groccery_store_id INT NOT NULL,
+    campus_food_outlet_id INT NOT NULL,
+    average_meal_spend DECIMAL(4,2),
+    student_id INT NOT NULL,
+
+    CONSTRAINT [PK_food] PRIMARY KEY ([food_id]),
+    CONSTRAINT [FK_student_details_food] FOREIGN KEY (student_id) references student_personal(student_id),
+    CONSTRAINT [FK_groccery_store_priority] FOREIGN KEY (groccery_store_id) references groccery_store_lookup(groccery_store_id),
+    CONSTRAINT [FK_on_campus_food_outlet] FOREIGN KEY (campus_food_outlet_id) references campus_food_outlet_lookup(campus_food_outlet_id)
+)
+
+CREATE TABLE transport (
+    transport_id INT IDENTITY NOT NULL,
+    preffered_mode_id INT NOT NULL,
+    preffered_univ_mode_id INT NOT NULL,
+    costly_unic_mode_id INT NOT NULL,
+    average_cost_univ DECIMAL(4,2),
+    peak_time_id INT NOT NULL,
+    college_res_used varchar(10) NOT NULL,
+    college_res_useful varchar(10) NOT NULL,
+    student_id INT NOT NULL
+
+    CONSTRAINT [PK_transport] PRIMARY KEY ([transport_id]),
+    CONSTRAINT [FK_student_details_transport] FOREIGN KEY (student_id) references student_personal(student_id),
+    CONSTRAINT [FK_peak_time_univ_transport] FOREIGN KEY (peak_time_id) references peak_time_lookup(peak_time_id),
+    CONSTRAINT [FK_preffered_mode_transport] FOREIGN KEY (preffered_mode_id) references mode_lookup(mode_id),
+    CONSTRAINT [FK_preffered_univ_mode_transport] FOREIGN KEY (preffered_univ_mode_id) references mode_lookup(mode_id),
+    CONSTRAINT [FK_costly_unic_mode_transport] FOREIGN KEY (costly_unic_mode_id) references mode_lookup(mode_id),
+)
+
+
+-- Lookup tables insert
+
+-- year lookup
+
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Freshman')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Sophomore')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Junior')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Senior')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('PhD')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Graduate 1st Year')
+INSERT INTO student_year_lookup (year_name)
+    VALUES ('Graduate 2nd Year')
+
+
+-- program lookup
+
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Applied Data Science')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Management Information Systems')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Computer Science')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Engineering Management')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Business Analytics')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Business Administration')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Civil Engineering')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Communications')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Economics')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Finance')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Marketing')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Law')
+INSERT INTO student_program_lookup (program_name)
+    VALUES ('Other')
+
+
+-- school lookup
+
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('iSchool')
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('College of Engineering and Computer Science')
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('College of Law')
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('Whitman School of Management')
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('S.I. Newhouse School Of Public Communications')
+INSERT INTO student_school_lookup (school_name)
+    VALUES ('Other')
+
+
+-- groccery store lookup
+
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Wegmans')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Price Chopper')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Tops Markets')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('ALDI')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('COSTCO')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Walgreens')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Walmart')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Target')
+INSERT INTO groccery_store_lookup (groccery_store_name)
+    VALUES ('Other')
+
+
+-- food outlet lookup
+
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Halal Shack')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Panda Express')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Core')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Dunkins')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Biscotti')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Pages Cafe')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Life Science Cafe')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Slocum Cafe')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('NVRC Cafe')
+INSERT INTO campus_food_outlet_lookup (outlet_name)
+    VALUES ('Other')
+
+
+-- country lookup
+
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('India')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('China')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('South Korea')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Spain')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Germany')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Saudi Arabia')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Australia')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Japan')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Italy')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('France')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Mexico')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Canada')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Pakistan')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Russia')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('United Kingdom')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('United Arab Emirates')
+INSERT INTO origin_country_lookup (country_name)
+    VALUES ('Other')
+
+
+-- employer lookup
+
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('RSA')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('Food Services')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('Teaching Assistant')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('Research Assistant')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('Campus Store')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('CO-OP')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('Other')
+INSERT INTO employer_lookup (employer_name)
+    VALUES ('ITS')
+
+
+-- priority lookup
+
+INSERT INTO priority_lookup (priority_name)
+    VALUES ('Food')
+INSERT INTO priority_lookup (priority_name)
+    VALUES ('Shelter')
+INSERT INTO priority_lookup (priority_name)
+    VALUES ('Transport')
+INSERT INTO priority_lookup (priority_name)
+    VALUES ('Leisure')
+INSERT INTO priority_lookup (priority_name)
+    VALUES ('Miscellaneous')
+
+
+-- transport mode lookup
+
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Uber')
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Lyft')
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Centro Bus')
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Veo')
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Bolt')
+INSERT INTO mode_lookup (mode_name)
+    VALUES ('Other')
+
+
+-- pek time lookup
+
+INSERT INTO peak_time_lookup (range_name)
+    VALUES ('5am - 12pm')
+INSERT INTO peak_time_lookup (range_name)
+    VALUES ('12pm - 8pm')
+INSERT INTO peak_time_lookup (range_name)
+    VALUES ('8pm - 5am')
+select * from origin_country_lookup
+
+
+
+-- insert data into student_personal 
+
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (28375623,'leo' ,'merc' ,'315952888' ,'Male' ,6 ,1 ,1 ,4)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (85643798,'gina' ,'martel' ,'315952485' ,'Female' ,3 ,2 ,1 ,7)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (73849627,'travis' ,'scott' ,'315952171' ,'Male' ,2 ,7 ,2 ,3)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (27485944,'lee' ,'mon' ,'315952992' ,'Male' ,7 ,6 ,4 ,5)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (33225634,'vaibhav' ,'chaudhari' ,'315952212' ,'Male' ,6 ,1 ,1 ,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (91746237,'tejas' ,'mane' ,'315952990' ,'Male' ,6 ,2 ,1 ,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (46736644,'kubra' ,'shaiq' ,'315952657' ,'Female' ,6 ,8 ,5 ,6)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (23898901,'gabriel' ,'cantu' ,'315952822' ,'Female' ,4 ,12 ,3 ,8)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (12398007,'mateo' ,'ho' ,'315952376' ,'Male' ,2 ,9 ,4 ,11)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (34532176,'bashira' ,'khan' ,'315952919' ,'Female' ,3 ,13 ,2 ,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (14219644, 'Verney', 'Haskur', '8886237766', 'Female', 5, 13, 6, 7)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (93485711,'haero' ,'isam' ,'3151233211' ,'Female' ,6,3,2,15)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (09876789,'vacum' ,'klaner' ,'3151244521' ,'Female' ,1,9,4,11)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (12309888,'sidde' ,'tabbel' ,'3159878901' ,'Female' ,4,8,5,11)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (19191918,'brute' ,'farce' ,'3156475631' ,'Female' ,2,13,6,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (17171713,'liam ' ,'hemsworth' ,'3152341239' ,'Female' ,5,1,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (17171732,'chriss' ,'patt' ,'3154537861' ,'Male' ,6,1,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (99880780,'atif' ,'aslam' ,'3150019901' ,'Male' ,2,1,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (23988912,'arijit' ,'singh' ,'3152223331' ,'Male' ,3,1,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (19191818,'sher' ,'khan' ,'3150001111' ,'Male' ,5,2,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (27274365,'kulin' ,'shah' ,'3158686861' ,'Male' ,4,2,1,1)
+INSERT INTO student_personal (SUID,first_name,last_name,phone_no,gender,year_id,program_id,school_id,origin_country_id) 
+    VALUES (65747465,'sumit' ,'khandelwal' ,'3156668881' ,'Male' ,3,2,1,1)
+
+
+
+
+-- insert data into student_address 
+
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Euclid',324 ,13213 ,'Syracuse' ,1 )
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Lanchester',432,13211,'Syracuse',2)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Ernie',111,13209,'Syracuse',3)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('South Campus',3243,13220,'Syracuse',4)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Euclid',222,13213,'Syracuse',5)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Aspen',2401,13210,'Syracuse',6)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Aspen',2402,13210,'Syracuse',7)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Aspen',1205,13210,'Syracuse',8)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Aspen',3201,13210,'Syracuse',9)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Aspen',4101,13210,'Syracuse',21)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Lanchester',564,13211,'Syracuse',22)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Lanchester',777,13211,'Syracuse',23)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Lanchester',234,13211,'Syracuse',24)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('South Campus',9908,13220,'Syracuse',25)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('South Campus',7102,13220,'Syracuse',26)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('South Campus',4201,13220,'Syracuse',27)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('South Campus',3456,13220,'Syracuse',28)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Ernie',546,13209,'Syracuse',29)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Ernie',901,13209,'Syracuse',30)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Ernie',711,13209,'Syracuse',31)
+INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+    VALUES ('Ernie',888,13209,'Syracuse',32)
+
+
+-- insert data into student_employment 
+
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,17 ,1 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('No',1 ,0 ,0 ,2 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,14 ,3)
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('No',1 ,0 ,0 ,4 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,15 ,5 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('No',1 ,0 ,0 ,6 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',2 ,15.20 ,19 ,7 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,10 ,8 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',3 ,17.20 ,10 ,9 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,17 ,21 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',2 ,15.20 ,19 ,22 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,18 ,23 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',4 ,19.20 ,14 ,24 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',2 ,15.20 ,15 ,25 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('No',1 ,0 ,0 ,26 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,20 ,27 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',5 ,14.20 ,12 ,28 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,18 ,29 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('No',1 ,0 ,0 ,30 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',1 ,13.20 ,18 ,31 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',2 ,15.20 ,17 ,32 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',3 ,16.00 ,10 ,8 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',5 ,14.20 ,10 ,9 )
+INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id) 
+    VALUES ('Yes',3 ,15.50 ,4 ,10 )
+
+
+
+-- insert data into montly_expense_wallet
+
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (190,800,100,100,100,1,2,1)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,500,130,200,60,1,2,2)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (200,650,120,150,100,4,2,3)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (210,700,120,170,120,1,2,4)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (180,600,120,150,100,2,4,5)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,850,120,150,100,4,2,6)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (300,900,100,150,0,3,2,7)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (270,900,100,150,0,3,2,8)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,900,100,150,0,3,2,9)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (240,900,100,150,0,3,2,21)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,500,130,200,60,1,2,22)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,500,130,200,60,1,2,23)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,500,130,200,60,1,2,24)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (250,500,130,200,60,1,2,25)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (160,450,50,150,100,1,4,26)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (160,580,150,150,100,1,4,27)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (190,550,100,150,100,1,2,28)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (175,500,120,150,100,1,2,29)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (190,600,130,150,100,1,4,30)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (240,700,100,150,100,1,3,31)
+INSERT INTO monthly_expense_wallet (food_budget,shelter_budget,transport_budget,leisure_budget,miscellaneous_budget
+    ,spend_priority_1_id,save_priority_1_id,student_id) 
+    VALUES (200,675,100,150,100,1,4,32)
+
+
+-- insert data into food
+
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (1,4,13,1)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (2,2,15,2)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (1,6,14,3)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,4,16,4)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,6,15,5)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,1,15,6)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,7,13,7)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (5,1,18,8)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (2,1,15,9)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (5,5,15,21)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (2,2,13,22)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (3,3,17,23)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,9,14,24)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (8,4,12,25)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (3,1,17,26)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (1,1,15,28)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (7,10,0,29)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,10,0,30)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (3,10,0,31)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,10,0,32)
+INSERT INTO food (groccery_store_id,campus_food_outlet_id,average_meal_spend,student_id) 
+    VALUES (4,10,0,27)
+
+-- insert data into transport
+
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,1,10,3,'Yes','Yes',1)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,8,3,'Yes','No',2)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,2,10,1,'No','No',3)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,9,3,'Yes','No',4)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,1,9,1,'No','Yes',5)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,1,12,3,'No','No',6)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,12,1,'Yes','No',7)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,2,10,3,'Yes','No',8)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,2,10,3,'Yes','No',9)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (2,3,2,9,3,'Yes','No',21)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,10,3,'No','No',22)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,12,3,'Yes','No',23)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,1,9,1,'No','Yes',24)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,10,3,'No','No',25)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,8,3,'Yes','No',26)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,12,3,'Yes','No',27)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,3,1,9,1,'No','Yes',28)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,8,3,'Yes','No',29)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,10,3,'No','No',30)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,8,3,'Yes','No',31)
+INSERT INTO transport (preffered_mode_id,preffered_univ_mode_id,costly_unic_mode_id,average_cost_univ
+    ,peak_time_id,college_res_used,college_res_useful,student_id) 
+    VALUES (1,1,2,12,3,'Yes','No',32)
+
+
+
+
+
+-- Data Logic 1
+-- A student wants to update employment status or change of employer
+-- update student employement details
+
+drop procedure if exists p_upsert_student_employment
+GO
+create procedure p_upsert_student_employment (
+    @employed VARCHAR(6),
+    @employer_id int,
+    @hourly_pay decimal(4,2),
+    @hours_per_week int,
+    @student_id int
+    ) as begin
+    if exists(select * from student_employment where student_id = @student_id)
+    begin 
+        update student_employment set employer_id = @employer_id, 
+                                    employed=@employed,
+                                    hourly_pay=@hourly_pay,
+                                    hours_per_week=@hours_per_week,
+                                    student_id=@student_id
+            where student_id = @student_id
+    end
+    else begin
+        INSERT INTO student_employment (employed,employer_id,hourly_pay,hours_per_week,student_id)  
+            values (@employed,@employer_id,@hourly_pay,@hours_per_week,@student_id)
+    end
+end 
+GO
+
+-- check stored_proc
+
+exec p_upsert_student_employment 'Yes',1,13.20,16,10
+select * from student_employment
+
+
+
+-- Data Logic 2
+-- If a student shifts to a different residence he/she should be able to update address
+-- Update address stored procedure
+
+drop procedure if exists p_upsert_student_address
+GO
+create procedure p_upsert_student_address (
+    @street_name VARCHAR(30),
+    @house_no int,
+    @pin_code varchar(9),
+    @city varchar(10),
+    @student_id int
+    ) as begin
+    if exists(select * from student_address where student_id = @student_id)
+    begin 
+        update student_address set street_name = @street_name, 
+                                    house_no=@house_no,
+                                    pin_code=@pin_code,
+                                    city=@city,
+                                    student_id=@student_id
+            where student_id = @student_id
+    end
+    else begin
+        INSERT INTO student_address (street_name,house_no,pin_code,city,student_id) 
+        VALUES (@street_name,@house_no,@pin_code,@city,@student_id)
+    end
+end 
+GO
+
+-- check stored_proc
+
+exec p_upsert_student_address 'Westcott',489,13210,'Syracuse',10
+select * from student_address
+
+
+
+-- Data Logic 3
+-- Students can see what are the top choices for other student to shop and eat food on campus
+-- where are majority students living
+
+--CREATE VIEW v_student_top_choice_food 
+
+drop view if exists v_student_top_choice_food
+
+CREATE VIEW v_student_top_choice_food
+AS
+select a.groccery_store_name, c.outlet_name, b.employer_name
+from (
+    select top 1 g.groccery_store_name,count(*) as responses,'1' as id
+    from food f 
+    join groccery_store_lookup g on g.groccery_store_id = f.groccery_store_id
+    where g.groccery_store_name != 'Other'
+    group by g.groccery_store_name
+    order by count(*) desc
+) a
+full outer join
+    (
+    select top 1 ep.employer_name,count(*) as responses,'1' as id
+    from student_employment e 
+    join employer_lookup ep on ep.employer_id = e.employer_id
+    where ep.employer_name != 'Other'
+    group by ep.employer_name
+    order by count(*) desc
+    ) b on b.id = a.id
+full outer join 
+    (
+    select top 1 c.outlet_name,count(*) as responses,'1' as id
+    from food f 
+    join campus_food_outlet_lookup c on c.campus_food_outlet_id = f.campus_food_outlet_id
+    where c.outlet_name != 'Other'
+    group by c.outlet_name
+    order by count(*) desc
+    ) c on c.id = a.id
+    
+--- look at view
+select * from v_student_top_choice_food
+
+
+-- Data Logic 4
+-- View to find the unique countries of participating students in the survey
+
+drop view if exists v_participating_countries
+
+create view v_participating_countries
+AS
+select top 10 o.country_name
+from student_personal s 
+join origin_country_lookup o on o.origin_country_id = s.origin_country_id
+group by o.country_name
+order by count(*) DESC
+
+--- look at view
+select * from v_participating_countries
+
+
+
+
+
+
